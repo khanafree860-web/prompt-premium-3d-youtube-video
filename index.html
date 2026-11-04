@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Afree Downloader — Download YouTube in Ultra HD Effortlessly</title>
+  
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              50: '#f0f3ff',
+              100: '#e0e7ff',
+              400: '#818cf8',
+              500: '#6366f1',
+              600: '#4f46e5',
+              700: '#4338ca',
+              accent: '#06b6d4',
+              pink: '#ec4899',
+              dark: '#0A0A0F',
+              card: 'rgba(18, 18, 26, 0.65)'
+            }
+          },
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+            mono: ['"JetBrains Mono"', 'monospace']
+          },
+          animation: {
+            'pulse-glow': 'pulseGlow 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+            'float': 'float 6s ease-in-out infinite',
+            'spin-slow': 'spin 12s linear infinite'
+          },
+          keyframes: {
+            pulseGlow: {
+              '0%, 100%': { opacity: 0.4 },
+              '50%': { opacity: 0.8 }
+            },
+            float: {
+              '0%, 100%': { transform: 'translateY(0px)' },
+              '50%': { transform: 'translateY(-12px)' }
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <!-- Vanilla Tilt JS -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/vanilla-tilt/1.8.1/vanilla-tilt.min.js"></script>
+
+  <!-- Import Map for Three.js Module -->
+  <script type="importmap">
+    {
+      "imports": {
+        "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+        "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+      }
+    }
+  </script>
+
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body class="bg-[#0A0A0F] text-slate-100 font-sans selection:bg-indigo-500 selection:text-white antialiased overflow-x-hidden">
+
+  <!-- Cursor Follower Glow -->
+  <div id="cursor-glow" class="pointer-events-none fixed -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-indigo-600/15 rounded-full blur-3xl z-0 transition-opacity duration-500 opacity-0 md:opacity-100"></div>
+
+  <!-- Ambient Animated Mesh Background -->
+  <div class="fixed inset-0 pointer-events-none z-0 overflow-hidden">
+    <div class="absolute -top-[20%] left-1/2 -translate-x-1/2 w-[1000px] h-[600px] bg-gradient-to-tr from-indigo-900/30 via-purple-900/20 to-cyan-900/20 rounded-full blur-[120px] animate-pulse-glow"></div>
+    <div class="absolute top-[40%] -left-[10%] w-[600px] h-[600px] bg-blue-900/20 rounded-full blur-[140px] animate-float"></div>
+    <div class="absolute top-[70%] -right-[10%] w-[600px] h-[600px] bg-cyan-900/20 rounded-full blur-[140px] animate-float" style="animation-delay: -3s;"></div>
+    <div class="absolute inset-0 bg-[radial-gradient(#1e1b4b_1px,transparent_1px)] [background-size:32px_32px] opacity-25"></div>
+  </div>
+
+  <!-- Navigation -->
+  <header class="fixed top-0 left-0 right-0 z-50 transition-all duration-300 py-4 px-4 sm:px-8" id="navbar">
+    <div class="max-w-7xl mx-auto flex items-center justify-between rounded-2xl bg-slate-950/40 backdrop-blur-xl border border-white/10 px-6 py-3 shadow-2xl shadow-black/40">
+      
+      <!-- Brand Logo -->
+      <a href="#" class="flex items-center gap-3 group">
+        <div class="relative w-10 h-10 rounded-xl bg-gradient-to-tr from-indigo-600 via-violet-600 to-cyan-400 p-[1px] shadow-lg shadow-indigo-500/30 group-hover:shadow-indigo-500/50 transition-all duration-300">
+          <div class="w-full h-full bg-[#0A0A0F] rounded-[11px] flex items-center justify-center relative overflow-hidden">
+            <div class="absolute inset-0 bg-gradient-to-br from-indigo-500/20 to-cyan-500/20 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+            <i data-lucide="play" class="w-5 h-5 text-indigo-400 fill-indigo-400 group-hover:scale-110 transition-transform"></i>
+          </div>
+        </div>
+        <div class="flex flex-col">
+          <span class="font-bold text-lg tracking-tight text-white flex items-center gap-1.5">
+            Afree <span class="bg-gradient-to-r from-indigo-400 via-purple-300 to-cyan-400 bg-clip-text text-transparent">Downloader</span>
+          </span>
+          <span class="text-[10px] uppercase font-mono tracking-widest text-indigo-400/80 -mt-1">Pro Studio 4K/8K</span>
+        </div>
+      </a>
+
+      <!-- Desktop Nav Links -->
+      <nav class="hidden md:flex items-center gap-8 text-sm font-medium text-slate-300">
+        <a href="#hero" class="hover:text-white transition-colors">Converter</a>
+        <a href="#features" class="hover:text-white transition-colors">Features</a>
+        <a href="#how-it-works" class="hover:text-white transition-colors">How it Works</a>
+        <a href="#batch-modal-trigger" id="batch-nav-btn" class="hover:text-cyan-400 transition-colors flex items-center gap-1.5">
+          <i data-lucide="layers" class="w-4 h-4 text-cyan-400"></i> Batch Mode
+        </a>
+      </nav>
+
+      <!-- Right CTAs -->
+      <div class="flex items-center gap-3">
+        <button id="theme-pill" class="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-mono border border-indigo-500/30 bg-indigo-500/10 text-indigo-300">
+          <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span> Engine v3.4 Active
+        </button>
+        <a href="#hero" class="magnetic-btn px-4 py-2 text-xs font-semibold rounded-xl bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 text-white shadow-lg shadow-indigo-600/30 hover:shadow-indigo-500/50 transition-all">
+          Quick Paste
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="relative z-10 pt-24">
+
+    <!-- HERO SECTION -->
+    <section id="hero" class="relative min-h-[90vh] flex flex-col items-center justify-center px-4 sm:px-6 lg:px-8 py-12">
+      
+      <!-- 3D Canvas Background Container -->
+      <div id="three-container" class="absolute inset-0 pointer-events-auto z-0 opacity-85 transition-opacity duration-1000"></div>
+
+      <!-- Hero Overlay Content -->
+      <div class="relative z-10 max-w-5xl mx-auto text-center flex flex-col items-center">
+        
+        <!-- Premium Pill Tag -->
+        <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/5 border border-white/10 backdrop-blur-md mb-8 text-xs font-medium text-slate-300 shadow-xl animate-float">
+          <span class="px-2 py-0.5 rounded-full bg-indigo-500/20 text-indigo-300 text-[11px] font-mono border border-indigo-500/30">NEW</span>
+          <span class="bg-gradient-to-r from-indigo-300 to-cyan-300 bg-clip-text text-transparent">Ultra-Fast 8K HDR & 320kbps Audio Pipeline</span>
+          <i data-lucide="sparkles" class="w-3.5 h-3.5 text-cyan-400"></i>
+        </div>
+
+        <!-- Headline -->
+        <h1 class="text-4xl sm:text-6xl md:text-7xl font-extrabold tracking-tight text-white mb-6 leading-[1.1]">
+          Download YouTube in <br class="hidden sm:inline" />
+          <span class="bg-gradient-to-r from-indigo-400 via-purple-300 to-cyan-400 bg-clip-text text-transparent drop-shadow-sm">
+            Ultra HD. Effortlessly.
+          </span>
+        </h1>
+
+        <!-- Subheadline -->
+        <p class="max-w-2xl text-base sm:text-lg text-slate-300 mb-10 leading-relaxed font-normal">
+          Experience pristine 8K 60fps video downloads and studio-grade 320kbps audio extraction. No watermark, no ads, zero tracking.
+        </p>
+
+        <!-- INPUT BOX / CONVERTER CARD -->
+        <div class="w-full max-w-3xl mb-8">
+          <div class="relative p-2 rounded-2xl bg-slate-900/80 backdrop-blur-2xl border border-indigo-500/30 shadow-2xl shadow-indigo-950/50 focus-within:border-cyan-400 focus-within:ring-4 focus-within:ring-cyan-500/20 transition-all duration-300">
+            <form id="fetch-form" class="flex flex-col sm:flex-row items-center gap-2">
+              
+              <div class="relative flex-1 w-full flex items-center">
+                <i data-lucide="link" class="absolute left-4 w-5 h-5 text-indigo-400"></i>
+                <input 
+                  type="url" 
+                  id="yt-url-input" 
+                  placeholder="Paste YouTube video or Shorts link here..." 
+                  required
+                  class="w-full bg-transparent pl-12 pr-28 py-4 text-sm sm:text-base text-white placeholder-slate-400 focus:outline-none font-sans"
+                />
+                
+                <!-- Paste from clipboard button -->
+                <button 
+                  type="button" 
+                  id="paste-btn"
+                  title="Paste from clipboard"
+                  class="absolute right-3 px-3 py-1.5 rounded-lg bg-white/5 border border-white/10 text-xs text-slate-300 hover:text-white hover:bg-white/10 transition-all flex items-center gap-1.5"
+                >
+                  <i data-lucide="clipboard" class="w-3.5 h-3.5 text-indigo-400"></i>
+                  <span class="hidden sm:inline">Paste</span>
+                </button>
+              </div>
+
+              <button 
+                type="submit" 
+                id="fetch-btn"
+                class="w-full sm:w-auto px-8 py-4 rounded-xl bg-gradient-to-r from-indigo-600 via-purple-600 to-cyan-500 hover:opacity-95 text-white font-semibold text-sm sm:text-base shadow-xl shadow-indigo-600/40 transition-all flex items-center justify-center gap-2 group shrink-0"
+              >
+                <span>Fetch Media</span>
+                <i data-lucide="arrow-right" class="w-4 h-4 group-hover:translate-x-1 transition-transform"></i>
+              </button>
+            </form>
+
+            <!-- Quick Demo Pills -->
+            <div class="mt-3 px-3 pb-1 flex flex-wrap items-center justify-between gap-2 text-xs text-slate-400 border-t border-white/5 pt-2">
+              <span class="flex items-center gap-1.5 text-slate-400">
+                <i data-lucide="zap" class="w-3.5 h-3.5 text-amber-400"></i>
+                Try sample links:
+              </span>
+              <div class="flex items-center gap-2 overflow-x-auto py-1">
+                <button class="sample-link px-2.5 py-1 rounded-md bg-white/5 hover:bg-indigo-500/20 text-slate-300 hover:text-indigo-300 border border-white/5 transition-all text-left whitespace-nowrap" data-url="https://www.youtube.com/watch?v=dQw4w9WgXcQ">
+                  🎵 Synthwave 4K Remaster
+                </button>
+                <button class="sample-link px-2.5 py-1 rounded-md bg-white/5 hover:bg-cyan-500/20 text-slate-300 hover:text-cyan-300 border border-white/5 transition-all text-left whitespace-nowrap" data-url="https://www.youtube.com/watch?v=L_LUpnjgPso">
+                  🌄 Nature 8K HDR Drone
+                </button>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- FETCH STATE / PREVIEW CONTAINER (Hidden by default) -->
+        <div id="preview-section" class="w-full max-w-3xl hidden opacity-0 translate-y-8 transition-all duration-700 ease-out">
+          <div class="glass-card p-6 sm:p-8 rounded-3xl border border-indigo-500/40 relative overflow-hidden text-left bg-slate-900/90 shadow-2xl">
+            
+            <!-- Glow background highlight -->
+            <div class="absolute -right-20 -bottom-20 w-64 h-64 bg-cyan-500/10 rounded-full blur-3xl pointer-events-none"></div>
+
+            <!-- Video Info Header -->
+            <div class="flex flex-col md:flex-row gap-6 items-start">
+              
+              <!-- Thumbnail preview with badge -->
+              <div class="relative w-full md:w-64 aspect-video rounded-2xl overflow-hidden shrink-0 border border-white/10 shadow-lg group">
+                <img id="preview-thumb" src="" alt="Thumbnail" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                <span id="preview-duration" class="absolute bottom-2 right-2 px-2 py-0.5 rounded-md bg-black/80 backdrop-blur-md text-[11px] font-mono text-white font-medium">10:42</span>
+                <span id="hdr-badge" class="absolute top-2 left-2 px-2 py-0.5 rounded-md bg-amber-500 text-slate-950 font-black text-[10px] tracking-wider uppercase">8K HDR</span>
+              </div>
+
+              <!-- Details -->
+              <div class="flex-1 min-w-0">
+                <div class="flex items-center gap-2 mb-2">
+                  <span class="px-2.5 py-0.5 rounded-full bg-emerald-500/20 border border-emerald-500/30 text-emerald-400 text-xs font-medium flex items-center gap-1">
+                    <i data-lucide="check-circle-2" class="w-3.5 h-3.5"></i> Stream Verified
+                  </span>
+                  <span id="channel-name" class="text-xs text-slate-400 truncate">Vevo Master Audio</span>
+                </div>
+                <h3 id="preview-title" class="text-lg sm:text-xl font-bold text-white mb-3 line-clamp-2 leading-snug">
+                  Cyberpunk 2077 - Ultra HD 8K Ambient Visuals & Hi-Res Sound Track
+                </h3>
+                
+                <!-- Format Switcher Segmented Control -->
+                <div class="p-1 rounded-xl bg-black/40 border border-white/10 inline-flex w-full sm:w-auto mb-4">
+                  <button id="tab-video" class="flex-1 sm:flex-initial px-5 py-2 rounded-lg text-xs font-bold transition-all flex items-center justify-center gap-2 bg-gradient-to-r from-indigo-600 to-violet-600 text-white shadow">
+                    <i data-lucide="video" class="w-4 h-4"></i> Video (MP4)
+                  </button>
+                  <button id="tab-audio" class="flex-1 sm:flex-initial px-5 py-2 rounded-lg text-xs font-bold transition-all flex items-center justify-center gap-2 text-slate-400 hover:text-white">
+                    <i data-lucide="music" class="w-4 h-4"></i> Audio (MP3 / FLAC)
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <hr class="border-white/10 my-6">
+
+            <!-- Format & Quality Options Grid -->
+            <div>
+              <div class="flex items-center justify-between mb-4">
+                <span class="text-xs font-semibold text-slate-300 uppercase tracking-wider font-mono">Select Output Quality</span>
+                <span id="est-size-badge" class="text-xs text-cyan-400 font-mono">Est. Size: 412 MB</span>
+              </div>
+
+              <!-- Options Grid (Video Options by default) -->
+              <div id="video-options" class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
+                <!-- 8K -->
+                <button class="quality-card p-3 rounded-xl border border-indigo-500/40 bg-indigo-500/10 hover:border-indigo-400 transition-all text-left relative overflow-hidden group active-quality" data-quality="8K (4320p)" data-size="1.4 GB">
+                  <div class="flex items-center justify-between text-xs font-bold text-white mb-1">
+                    <span>4320p 8K</span>
+                    <span class="px-1.5 py-0.5 rounded text-[9px] bg-indigo-500 text-white">60fps</span>
+                  </div>
+                  <span class="text-[11px] text-slate-400 block">AV1 Ultra HDR</span>
+                  <span class="text-[10px] text-indigo-300 font-mono">~1.4 GB</span>
+                </button>
+                <!-- 4K -->
+                <button class="quality-card p-3 rounded-xl border border-white/10 bg-white/5 hover:border-indigo-500/50 transition-all text-left relative overflow-hidden group" data-quality="4K (2160p)" data-size="620 MB">
+                  <div class="flex items-center justify-between text-xs font-bold text-white mb-1">
+                    <span>2160p 4K</span>
+                    <span class="px-1.5 py-0.5 rounded text-[9px] bg-slate-800 text-slate-300">60fps</span>
+                  </div>
+                  <span class="text-[11px] text-slate-400 block">ProRes Crisp</span>
+                  <span class="text-[10px] text-slate-400 font-mono">~620 MB</span>
+                </button>
+                <!-- 1080p -->
+                <button class="quality-card p-3 rounded-xl border border-white/10 bg-white/5 hover:border-indigo-500/50 transition-all text-left relative overflow-hidden group" data-quality="1080p Full HD" data-size="180 MB">
+                  <div class="flex items-center justify-between text-xs font-bold text-white mb-1">
+                    <span>1080p FHD</span>
+                    <span class="px-1.5 py-0.5 rounded text-[9px] bg-slate-800 text-slate-300">60fps</span>
+                  </div>
+                  <span class="text-[11px] text-slate-400 block">High Bitrate</span>
+                  <span class="text-[10px] text-slate-400 font-mono">~180 MB</span>
+                </button>
+                <!-- 720p -->
+                <button class="quality-card p-3 rounded-xl border border-white/10 bg-white/5 hover:border-indigo-500/50 transition-all text-left relative overflow-hidden group" data-quality="720p HD" data-size="85 MB">
+                  <div class="flex items-center justify-between text-xs font-bold text-white mb-1">
+                    <span>720p HD</span>
+                    <span class="px-1.5 py-0.5 rounded text-[9px] bg-slate-800 text-slate-300">30fps</span>
+                  </div>
+                  <span class="text-[11px] text-slate-400 block">Fast Compact</span>
+                  <span class="text-[10px] text-slate-400 font-mono">~85 MB</span>
+                </button>
+              </div>
+
+              <!-- Audio Options Grid (Hidden by default) -->
+              <div id="audio-options" class="grid grid-cols-2 sm:grid-cols-3 gap-3 mb-6 hidden">
+                <button class="quality-card p-3 rounded-xl border border-cyan-500/40 bg-cyan-500/10 hover:border-cyan-400 transition-all text-left relative overflow-hidden group active-quality" data-quality="320 kbps MP3" data-size="24 MB">
+                  <div class="flex items-center justify-between text-xs font-bold text-white mb-1">
+                    <span>320 kbps MP3</span>
+                    <span class="px-1.5 py-0.5 rounded text-[9px] bg-cyan-500/30 text-cyan-300 font-mono">Extreme</span>
+                  </div>
+                  <span class="text-[11px] text-slate-400 block">Studio HQ MP3</span>
+                  <span class="text-[10px] text-cyan-300 font-mono">~24 MB</span>
+                </button>
+                <button class="quality-card p-3 rounded-xl border border-white/10 bg-white/5 hover:border-cyan-500/50 transition-all text-left relative overflow-hidden group" data-quality="FLAC Lossless" data-size="65 MB">
+                  <div class="flex items-center justify-between text-xs font-bold text-white mb-1">
+                    <span>FLAC Lossless</span>
+                    <span class="px-1.5 py-0.5 rounded text-[9px] bg-slate-800 text-slate-300 font-mono">24-bit</span>
+                  </div>
+                  <span class="text-[11px] text-slate-400 block">Audiophile Master</span>
+                  <span class="text-[10px] text-slate-400 font-mono">~65 MB</span>
+                </button>
+                <button class="quality-card p-3 rounded-xl border border-white/10 bg-white/5 hover:border-cyan-500/50 transition-all text-left relative overflow-hidden group" data-quality="256 kbps M4A" data-size="18 MB">
+                  <div class="flex items-center justify-between text-xs font-bold text-white mb-1">
+                    <span>256 kbps M4A</span>
+                    <span class="px-1.5 py-0.5 rounded text-[9px] bg-slate-800 text-slate-300 font-mono">AAC</span>
+                  </div>
+                  <span class="text-[11px] text-slate-400 block">Apple Native</span>
+                  <span class="text-[10px] text-slate-400 font-mono">~18 MB</span>
+                </button>
+              </div>
+
+              <!-- Download Action CTA -->
+              <div class="flex flex-col sm:flex-row items-center gap-4">
+                <button 
+                  id="start-download-btn"
+                  class="w-full sm:flex-1 py-4 px-8 rounded-xl bg-gradient-to-r from-emerald-500 via-teal-500 to-cyan-500 hover:from-emerald-400 hover:to-cyan-400 text-slate-950 font-extrabold text-base shadow-xl shadow-teal-500/25 transition-all flex items-center justify-center gap-3 group relative overflow-hidden"
+                >
+                  <span class="relative z-10 flex items-center gap-2">
+                    <i data-lucide="download-cloud" class="w-5 h-5 group-hover:bounce"></i>
+                    <span id="dl-btn-text">Download 8K (4320p) Now</span>
+                  </span>
+                  <div class="shine-sweep"></div>
+                </button>
+
+                <button id="cancel-preview" class="w-full sm:w-auto px-5 py-4 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-xs text-slate-300 font-medium transition-colors">
+                  Clear
+                </button>
+              </div>
+
+              <!-- Download Progress Modal/Overlay inside preview -->
+              <div id="dl-progress-box" class="mt-4 p-4 rounded-xl bg-black/60 border border-indigo-500/30 hidden">
+                <div class="flex items-center justify-between text-xs font-mono mb-2">
+                  <span id="dl-status-text" class="text-indigo-300 flex items-center gap-2">
+                    <i data-lucide="loader-2" class="w-3.5 h-3.5 animate-spin"></i> Encoding 8K Stream...
+                  </span>
+                  <span id="dl-percent" class="text-white font-bold">45%</span>
+                </div>
+                <div class="w-full h-2 rounded-full bg-slate-800 overflow-hidden">
+                  <div id="dl-progress-bar" class="h-full bg-gradient-to-r from-indigo-500 via-purple-500 to-cyan-400 transition-all duration-300 w-0"></div>
+                </div>
+              </div>
+
+            </div>
+
+          </div>
+        </div>
+
+        <!-- Trust Badges -->
+        <div class="mt-8 flex flex-wrap justify-center items-center gap-6 text-xs text-slate-400 font-medium">
+          <span class="flex items-center gap-1.5"><i data-lucide="shield-check" class="w-4 h-4 text-emerald-400"></i> No Login Required</span>
+          <span class="flex items-center gap-1.5"><i data-lucide="zap" class="w-4 h-4 text-amber-400"></i> 10GB/s Cloud Edge Nodes</span>
+          <span class="flex items-center gap-1.5"><i data-lucide="lock" class="w-4 h-4 text-cyan-400"></i> Encrypted Direct Stream</span>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- STATS COUNTER BAR -->
+    <section class="py-16 border-y border-white/10 bg-slate-950/60 backdrop-blur-lg">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
+          
+          <div class="stat-card">
+            <h3 class="text-3xl sm:text-4xl font-extrabold text-white font-mono tracking-tight bg-gradient-to-r from-indigo-300 to-white bg-clip-text text-transparent">
+              <span class="counter" data-target="14.8">0</span>M+
+            </h3>
+            <p class="text-xs text-slate-400 mt-1 uppercase tracking-wider font-semibold">Videos Converted</p>
+          </div>
+
+          <div class="stat-card">
+            <h3 class="text-3xl sm:text-4xl font-extrabold text-white font-mono tracking-tight bg-gradient-to-r from-purple-300 to-white bg-clip-text text-transparent">
+              <span class="counter" data-target="99.98">0</span>%
+            </h3>
+            <p class="text-xs text-slate-400 mt-1 uppercase tracking-wider font-semibold">Uptime SLA</p>
+          </div>
+
+          <div class="stat-card">
+            <h3 class="text-3xl sm:text-4xl font-extrabold text-white font-mono tracking-tight bg-gradient-to-r from-cyan-300 to-white bg-clip-text text-transparent">
+              <span class="counter" data-target="194">0</span>+
+            </h3>
+            <p class="text-xs text-slate-400 mt-1 uppercase tracking-wider font-semibold">Global Edge Locations</p>
+          </div>
+
+          <div class="stat-card">
+            <h3 class="text-3xl sm:text-4xl font-extrabold text-white font-mono tracking-tight bg-gradient-to-r from-emerald-300 to-white bg-clip-text text-transparent">
+              <span class="counter" data-target="0">0</span>
+            </h3>
+            <p class="text-xs text-slate-400 mt-1 uppercase tracking-wider font-semibold">Ads & Logs</p>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- BENTO GRID FEATURES SECTION (3D TILT CARDS) -->
+    <section id="features" class="py-24 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
+      
+      <div class="text-center max-w-3xl mx-auto mb-16">
+        <span class="text-xs font-mono uppercase tracking-widest text-indigo-400 mb-3 block">Engineering Perfection</span>
+        <h2 class="text-3xl sm:text-5xl font-extrabold text-white tracking-tight">
+          Designed like a high-end tool. <br />
+          <span class="bg-gradient-to-r from-indigo-400 to-cyan-400 bg-clip-text text-transparent">Built for power users.</span>
+        </h2>
+      </div>
+
+      <!-- Bento Grid Layout -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        
+        <!-- Feature 1: 8K Ultra HD (Large 2 col) -->
+        <div class="tilt-card md:col-span-2 glass-card p-8 rounded-3xl border border-white/10 bg-slate-900/60 relative overflow-hidden group" data-tilt data-tilt-max="7" data-tilt-glare data-tilt-max-glare="0.2">
+          <div class="absolute -right-10 -bottom-10 w-72 h-72 bg-indigo-600/10 rounded-full blur-3xl group-hover:bg-indigo-600/20 transition-all"></div>
+          
+          <div class="flex items-center justify-between mb-6">
+            <div class="w-12 h-12 rounded-2xl bg-indigo-500/10 border border-indigo-500/30 flex items-center justify-center text-indigo-400">
+              <i data-lucide="tv-2" class="w-6 h-6"></i>
+            </div>
+            <span class="px-3 py-1 rounded-full bg-indigo-500/20 text-indigo-300 text-xs font-mono font-semibold border border-indigo-500/30">
+              8K 60FPS HDR
+            </span>
+          </div>
+
+          <h3 class="text-2xl font-bold text-white mb-3">Cinema Quality 8K Video Extraction</h3>
+          <p class="text-slate-400 text-sm leading-relaxed mb-6 max-w-md">
+            Preserve every pixel with AV1, VP9, and ProRes container support. High Dynamic Range (HDR10) colors remain uncompressed with zero downscaling.
+          </p>
+
+          <!-- Interactive 3D visual mockup preview -->
+          <div class="w-full h-36 rounded-2xl bg-black/40 border border-white/10 p-3 flex items-center justify-between overflow-hidden relative">
+            <div class="flex items-center gap-3">
+              <div class="w-20 h-20 rounded-xl bg-gradient-to-tr from-indigo-500 to-purple-600 flex items-center justify-center text-white font-bold font-mono text-xl shadow-lg">
+                8K
+              </div>
+              <div>
+                <span class="text-xs font-bold text-white block">7680 × 4320 Master Stream</span>
+                <span class="text-[11px] text-slate-400 font-mono">Bitrate: 120 Mbps • 10-bit Color</span>
+              </div>
+            </div>
+            <div class="hidden sm:flex items-center gap-1 font-mono text-xs text-emerald-400 bg-emerald-500/10 px-3 py-1.5 rounded-lg border border-emerald-500/20">
+              <i data-lucide="zap" class="w-3.5 h-3.5"></i> Native Stream
+            </div>
+          </div>
+        </div>
+
+        <!-- Feature 2: Studio Audio -->
+        <div class="tilt-card glass-card p-8 rounded-3xl border border-white/10 bg-slate-900/60 relative overflow-hidden group" data-tilt data-tilt-max="7">
+          <div class="w-12 h-12 rounded-2xl bg-cyan-500/10 border border-cyan-500/30 flex items-center justify-center text-cyan-400 mb-6">
+            <i data-lucide="headphones" class="w-6 h-6"></i>
+          </div>
+
+          <h3 class="text-xl font-bold text-white mb-3">Lossless Studio Audio</h3>
+          <p class="text-slate-400 text-sm leading-relaxed mb-6">
+            Extract raw audio streams in 320kbps MP3, AAC, or uncompressed 24-bit FLAC. Complete with ID3 tags and cover art.
+          </p>
+
+          <!-- Audio Waveform Graphic -->
+          <div class="flex items-center gap-1 h-12 px-4 rounded-xl bg-black/40 border border-white/10">
+            <div class="w-1.5 h-6 bg-cyan-400 rounded-full animate-pulse"></div>
+            <div class="w-1.5 h-10 bg-cyan-400 rounded-full animate-pulse" style="animation-delay:0.2s"></div>
+            <div class="w-1.5 h-4 bg-indigo-400 rounded-full animate-pulse" style="animation-delay:0.4s"></div>
+            <div class="w-1.5 h-8 bg-cyan-400 rounded-full animate-pulse" style="animation-delay:0.1s"></div>
+            <div class="w-1.5 h-12 bg-purple-400 rounded-full animate-pulse" style="animation-delay:0.3s"></div>
+            <div class="w-1.5 h-6 bg-cyan-400 rounded-full animate-pulse" style="animation-delay:0.5s"></div>
+            <div class="w-1.5 h-9 bg-cyan-400 rounded-full animate-pulse" style="animation-delay:0.2s"></div>
+            <span class="ml-auto font-mono text-xs text-cyan-300 font-bold">320 KBPS</span>
+          </div>
+        </div>
+
+        <!-- Feature 3: Speedometer -->
+        <div class="tilt-card glass-card p-8 rounded-3xl border border-white/10 bg-slate-900/60 relative overflow-hidden group" data-tilt data-tilt-max="7">
+          <div class="w-12 h-12 rounded-2xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-amber-400 mb-6">
+            <i data-lucide="gauge" class="w-6 h-6"></i>
+          </div>
+
+          <h3 class="text-xl font-bold text-white mb-3">Multi-Thread Cloud Acceleration</h3>
+          <p class="text-slate-400 text-sm leading-relaxed mb-6">
+            Parallel stream downloading bypasses throttling. Speeds up to 10 Gbps direct to your storage.
+          </p>
+
+          <div class="flex items-center justify-between p-3 rounded-xl bg-black/40 border border-white/10 font-mono text-xs">
+            <span class="text-slate-400">Download Rate</span>
+            <span class="text-amber-400 font-bold flex items-center gap-1">
+              <i data-lucide="trending-up" class="w-3.5 h-3.5"></i> 940 MB/s
+            </span>
+          </div>
+        </div>
+
+        <!-- Feature 4: Zero Tracking -->
+        <div class="tilt-card glass-card p-8 rounded-3xl border border-white/10 bg-slate-900/60 relative overflow-hidden group" data-tilt data-tilt-max="7">
+          <div class="w-12 h-12 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400 mb-6">
+            <i data-lucide="shield-check" class="w-6 h-6"></i>
+          </div>
+
+          <h3 class="text-xl font-bold text-white mb-3">Zero Ads, Zero Tracking</h3>
+          <p class="text-slate-400 text-sm leading-relaxed mb-6">
+            No popup redirects, no malicious scripts, no login required. Private RAM-only conversion servers.
+          </p>
+
+          <div class="flex items-center gap-2 text-xs text-emerald-400 font-mono">
+            <i data-lucide="lock" class="w-4 h-4"></i> RAM-Only Ephemeral Processing
+          </div>
+        </div>
+
+        <!-- Feature 5: Batch Downloads -->
+        <div class="tilt-card glass-card p-8 rounded-3xl border border-white/10 bg-slate-900/60 relative overflow-hidden group" data-tilt data-tilt-max="7">
+          <div class="w-12 h-12 rounded-2xl bg-purple-500/10 border border-purple-500/30 flex items-center justify-center text-purple-400 mb-6">
+            <i data-lucide="layers" class="w-6 h-6"></i>
+          </div>
+
+          <h3 class="text-xl font-bold text-white mb-3">Playlist & Batch Mode</h3>
+          <p class="text-slate-400 text-sm leading-relaxed mb-6">
+            Paste entire YouTube playlists or multi-link text blocks. Download 50+ tracks simultaneously in one ZIP archive.
+          </p>
+
+          <button id="open-batch-modal" class="w-full py-2 px-4 rounded-xl bg-purple-500/20 hover:bg-purple-500/30 text-purple-300 text-xs font-semibold border border-purple-500/30 transition-all flex items-center justify-center gap-2">
+            Try Batch Downloader <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
+          </button>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- HOW IT WORKS (TIMELINE WITH CONNECTED GLOW PATH) -->
+    <section id="how-it-works" class="py-24 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto border-t border-white/5">
+      <div class="text-center max-w-3xl mx-auto mb-20">
+        <span class="text-xs font-mono uppercase tracking-widest text-cyan-400 mb-3 block">Simple 3-Step Flow</span>
+        <h2 class="text-3xl sm:text-5xl font-extrabold text-white tracking-tight">
+          From link to media in seconds.
+        </h2>
+      </div>
+
+      <div class="relative grid grid-cols-1 md:grid-cols-3 gap-10">
+        
+        <!-- Glowing Path Line (Desktop) -->
+        <div class="hidden md:block absolute top-1/2 left-10 right-10 h-0.5 bg-gradient-to-r from-indigo-500 via-purple-500 to-cyan-400 -translate-y-1/2 z-0 opacity-40"></div>
+
+        <!-- Step 1 -->
+        <div class="relative z-10 glass-card p-8 rounded-3xl border border-white/10 bg-slate-950/80 text-center flex flex-col items-center">
+          <div class="w-16 h-16 rounded-2xl bg-indigo-600/20 border border-indigo-500/40 text-indigo-400 flex items-center justify-center font-mono text-xl font-extrabold mb-6 shadow-xl shadow-indigo-600/20">
+            01
+          </div>
+          <h3 class="text-xl
